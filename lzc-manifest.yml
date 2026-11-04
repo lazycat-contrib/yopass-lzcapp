@@ -1,0 +1,43 @@
+application:
+  subdomain: yopass
+  multi_instance: false
+  # Yopass has no accounts: a secret is protected by its unguessable link and
+  # destroyed on first read. Access therefore stays behind the LazyCat entry.
+  upstreams:
+    - location: /
+      backend: http://yopass:1337/
+
+services:
+  memcached:
+    image: docker.1ms.run/library/memcached:1.6-alpine
+    # Storage for pending secrets only; they are short-lived by design, so
+    # nothing here needs to survive a restart.
+    command: ["memcached", "-m", "64"]
+
+  yopass:
+    # upstream: jhaals/yopass:16.0.1
+    image: docker.1ms.run/jhaals/yopass:16.0.1
+    command: ["--memcached=memcached:11211"]
+    environment:
+      - TZ=Asia/Shanghai
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:1337/ || exit 1"]
+      interval: 20s
+      timeout: 10s
+      retries: 15
+      start_period: 30s
+    depends_on:
+      - memcached
+
+usage: |
+  Yopass 用于**安全地分享密文**：把密码、密钥或文件生成一个一次性链接，
+  对方打开读取一次后，内容即从服务器销毁。
+
+  - **没有账号体系**：安全性来自"链接不可猜 + 读过即焚"，
+    因此访问由懒猫入口负责鉴权——能访问入口的人才能创建或读取密文，
+    请只在自己信任的网络里开放。
+  - 未读的密文暂存在内部的 memcached 中，属于短期数据，重启即清空
+    （已读的本来就会被销毁）；不需要你另外准备数据库。
+  - 支持设置有效期与"读取一次/多次"，也可以像使用官方 CLI 一样通过 API 提交。
+  - 未做真机验证：创建密文、读取与销毁、文件分享、过期清理
+    均未在设备上实测。

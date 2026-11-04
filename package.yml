@@ -1,0 +1,18 @@
+package: community.lazycat.app.yopass
+name: Yopass
+version: 0.0.0
+description: "Share secrets safely: send passwords and files as one-time links that self-destruct after being read."
+min_os_version: "1.5.0"
+homepage: https://yopass.se/
+author: Johan Haals
+license: Apache-2.0
+permissions:
+  required:
+    - net.internet
+locales:
+  zh:
+    name: Yopass
+    description: "安全分享密文：把密码或文件生成一次性链接，被读取一次后即自动销毁。"
+  en:
+    name: Yopass
+    description: "Share secrets safely: send passwords and files as one-time links that self-destruct after being read."
