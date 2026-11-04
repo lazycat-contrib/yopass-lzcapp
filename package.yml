@@ -1,6 +1,6 @@
 package: community.lazycat.app.yopass
 name: Yopass
-version: 0.0.0
+version: 16.0.1
 description: "Share secrets safely: send passwords and files as one-time links that self-destruct after being read."
 min_os_version: "1.5.0"
 homepage: https://yopass.se/
